@@ -59,7 +59,7 @@ In all of R code chunks above the `echo = FALSE` attribute is used. This is to p
 library(tidyverse)
 ```
 ```{r}
-districts=read.csv('../Documents/data_science/r_solo-jcrando/data/districts.csv')
+districts=read.csv('~/data_science/r_solo-jcrando/data/districts.csv')
 ```
 ```{r}
 districts %>% 
@@ -105,6 +105,105 @@ library(ggplot2)
 
 ```{r}
 
-ggplot(districts, aes(x=alg_1)) + geom_histogram()
+ggplot(districts, aes(x=grad)) + geom_histogram()
+```
+```{r}
+ggplot(districts, aes(x=grad)) + geom_histogram()
+```
+the distribution is left skewed
+
+```{r}
+ggplot(districts, aes(x=alg_1, y=alg_2))+ geom_point()
+```
+there seems to be a positive correlation with proficiency in one and the other
+```{r}
+ggplot(districts, aes(x=alg_1, y=alg_2))+ geom_point()+facet_wrap(~region)
+```
+the positive correlation seems to go drop in the southeast and there is a point that is unaccounted for for region
+
+```{r}
+ggplot(districts, aes(x=region, y= enrollment))+ geom_col()
+```
+mid cumberland has the highest enrollment, and northwest has the lowest
+
+
+
+```{r}
+districts %>% 
+  select(enrollment, region) %>% 
+  filter(is.na(enrollment))
+  
+```
+memphis, upper cumberland, east tn all have na's
+
+```{r}
+districts %>% 
+  drop_na(grad) %>% 
+  summarize(mean(grad))
 ```
 
+mean graduation is 90.04, there are very different populations sizes in the different regions
+
+```{r}
+districts %>% 
+  drop_na(grad, enrollment) %>% 
+  summarize(weighted.mean(grad, enrollment))
+```
+the weighted mean is 87.26 which makes since given that some of the regions with the highest enrollment have lower grad rates, in the 70s
+
+
+
+```{r}
+notn<-districts %>% 
+  filter(system_name!='State of Tennessee') 
+ggplot(notn, aes(y=enrollment, x=region))+ geom_boxplot()
+```
+
+memphis has one crazy high enrollment outlyer
+
+```{r}
+notn<-districts %>% 
+  filter(system_name!='State of Tennessee') 
+ggplot(notn, aes(y=grad, x=region))+ geom_boxplot()
+```
+all the medians are pretty close
+
+16)in the grad-rgeion boxplot, all of the medians look like they are over the average, but given some of the outliers and given that those outliers may also represent the very high enrollment outliers on the enrollment- region graph, that may make sense.
+
+```{r}
+districts %>% 
+  drop_na(alg_1, alg_2) %>%
+  mutate(alg_difference= alg_1-alg_2) %>% 
+  select(system_name, alg_difference) %>% 
+  arrange(alg_difference)
+```
+Pickett county has the largest drop
+
+```{r}
+notn<-districts %>% 
+  filter(system_name!='State of Tennessee') %>%
+  drop_na(alg_1, alg_2) %>%
+  mutate(alg_difference= alg_1-alg_2)
+ggplot(notn, aes(x=alg_difference))+ geom_histogram()
+```
+
+```{r}
+districts %>% 
+  drop_na(alg_1, alg_2) %>%
+  mutate(alg_difference= alg_1-alg_2) %>% 
+  select(system_name, alg_difference) %>% 
+  filter(alg_difference<0)
+```
+there are 18 with negative numbers, mean that they had a higher proficiency in alg-2 than alg_1.  18 out of 118 or 15%
+
+
+```{r}
+districts %>% 
+  drop_na(eng_2, eng_3) %>%
+  mutate(eng_difference= eng_2-eng_3) %>% 
+  select(system_name, eng_difference) %>% 
+  arrange(eng_difference)
+```
+
+the drop off is even more severe with english
+18)
