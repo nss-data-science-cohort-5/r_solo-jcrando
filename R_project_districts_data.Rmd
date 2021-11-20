@@ -207,3 +207,39 @@ districts %>%
 
 the drop off is even more severe with english
 18)
+```{r}
+districts<- districts %>% 
+ mutate(null_counts= apply(X= is.na(districts),MARGIN= 1, FUN= sum))
+  view()
+```
+```{r}
+districts %>% 
+  arrange(desc(null_counts)) %>% 
+  view()
+```
+west tn school for the deaf has the largest number of missing values
+many schools that have a lot of missing data are missing grad, dropout, act, eng, alg, and most subjects, but have demographics info
+
+19)
+
+```{r}
+install.packages('corrr')
+```
+
+```{r}
+library(corrr)
+```
+
+```{r}
+dis_corr<-districts %>% 
+  select(alg_1:dropout) %>% 
+  correlate() %>% 
+  select(term, grad) %>% 
+  
+  view()
+```
+
+```{r}
+ggplot(dis_corr, aes(x=grad, fill=term))+ geom_bar(na.rm=FALSE)+coord_flip()
+```
+high performance in biology and science correlate with higher graduation
