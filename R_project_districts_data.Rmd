@@ -223,23 +223,29 @@ many schools that have a lot of missing data are missing grad, dropout, act, eng
 19)
 
 ```{r}
-install.packages('corrr')
-```
-
-```{r}
-library(corrr)
-```
-
-```{r}
-dis_corr<-districts %>% 
-  select(alg_1:dropout) %>% 
-  correlate() %>% 
-  select(term, grad) %>% 
-  
-  view()
-```
-
-```{r}
+districts %>% 
+  select(where(is.numeric)& !system) %>% 
+  cor(use='pairwise.complete.obs')
 ggplot(dis_corr, aes(x=grad, fill=term))+ geom_bar(na.rm=FALSE)+coord_flip()
 ```
 high performance in biology and science correlate with higher graduation
+
+```{r}
+ggplot(districts, aes(x=grad, y=suspended))+ 
+  geom_point()+
+  geom_smooth(method = 'lm')
+
+```
+yes, if anything they have a negative correlation in the graph and in the data.
+
+21)
+
+```{r}
+districts_lm<-lm(suspended~grad, data= districts)
+
+summary(districts_lm)
+```
+the Rsquared is .08. I think that means that only 8% of students how are suspended graduate. the regression line seems appropriate. 
+
+
+
